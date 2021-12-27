@@ -57,7 +57,90 @@
         console.error(err);
     });
     </script>
+    <script>
+        let inputSet = false;
+
+        function bufferToBase64(buffer){
+            let output = "";
+            let data = new Uint8Array(buffer);
+            for (let i = 0; i < data.byteLength; i++) {
+                output += String.fromCharCode(data[i]);
+            }
+            return window.btoa(output);
+        }
+
+        function showImage(base64, parent){
+            const previewContainer = document.querySelector("#preview-container");
+            let src = "data:image/jpg;base64," + base64;
+            let img = document.createElement("img");
+            img.setAttribute("src", src);
+            parent.appendChild(img);
+        }
+
+        function clear(){
+            let images = document.querySelectorAll(".output img");
+            for (let i = 0; i < images.length; i++) {
+                images[i].remove();
+            }
+        }
+
+        function processInput(){
+            const inputFileElement = document.querySelector(".input input[name=file]");
+            const fileList = inputFileElement.files;
+            const file = fileList[0];
+            const inputElement = document.querySelector("#input-container");
+            const outputElement = document.querySelector("#output-container");
+
+            if (file && file.type.startsWith("image")) {
+                const reader = new FileReader();
+                reader.readAsArrayBuffer(file);
+                reader.addEventListener("load", function(){
+                    if (inputSet) clear();
+                    inputSet = true;
+                    let buffer = reader.result;
+                    showImage(bufferToBase64(buffer), inputElement);
+
+                    // processing
+
+                    // showImage(outputSrc, outputElement)
+
+                });
+            }
+        }
+    </script>
+    <link href="style.css" type="text/css" rel="stylesheet">
 </head>
 <body>
+    <!-- todo: regulacja parametrów, responsywność -->
+    <div class="interface">
+        <div class="input">
+            <label for="file">Wybierz zdjęcie: </label>
+            <input type="file" name="file" /><br />
+            <input type="button" name="confirmation" value="Potwierdź" onclick="processInput()" />
+        </div>
+        <div class="config">
+            <label for="placeholder1">placeholder1: </label>
+            <input type="range" name="placeholder1" /> <br />
+            <label for="placeholder2">placeholder2: </label>
+            <input type="range" name="placeholder2" /> <br />
+            <label for="placeholder3">placeholder3: </label>
+            <input type="range" name="placeholder3" /> <br />
+            <!--
+                regulacja parametrów
+                użyć onchange="processInput()"
+            -->
+        </div>
+    </div>
+    <div class="output">
+        <div id="input-container">
+            <p>Plik wejściowy: </p>
+        </div>
+        <div id="output-container">
+            <p>Plik wyjściowy: </p>
+        </div>
+    </div>
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
 </body>
 </html>
