@@ -8,6 +8,12 @@
 
     <script src="jimp.js"></script>
     <script>
+    var convolute1 = [[1, 0, -1], [2, 0, -2], [1, 0, -1]];
+    var convolute2 = [[1, 2, 1], [0, 0, 0], [-1, -2, -1]];
+    // var convolute1 = [[1, 0, -1], [1, 0, -1], [1, 0, -1]];
+    // var convolute2 = [[1, 1, 1], [0, 0, 0], [-1, -1, -1]];
+    //var convolute1 = [[-1, -1, -1], [-1, 8, -1], [-1, -1, -1]];
+
     Jimp.read("lenna.jpg").then(function (lenna) {
 
         lenna.getBase64(Jimp.MIME_JPEG, function (err, src) {
@@ -15,31 +21,21 @@
                 img.setAttribute("src", src);
                 document.body.appendChild(img);
             })     
-            .greyscale()                 // set greyscale
-            .convolute([[1, 0, -1], [2, 0, -2], [1, 0, -1]])
-            .getBase64(Jimp.MIME_JPEG, function (err, src) {
-                var img = document.createElement("img");
-                img.setAttribute("src", src);
-                document.body.appendChild(img);
-            });
+            
+
+            .greyscale()               // set greyscale
+            .convolute(convolute1);
 
         Jimp.read("lenna.jpg").then(function (lenna2) {
-        lenna2.getBase64(Jimp.MIME_JPEG, function (err, src) {
-                var img = document.createElement("img");
-                img.setAttribute("src", src);
-                document.body.appendChild(img);
-            })     
-            .greyscale()                 // set greyscale
-            .convolute([[1, 2, 1], [0, 0, 0], [-1, -2, -1]])
+        lenna2
+            
 
-            .getBase64(Jimp.MIME_JPEG, function (err, src) {
-                var img = document.createElement("img");
-                img.setAttribute("src", src);
-                document.body.appendChild(img);
-            })
+            .greyscale()               // set greyscale
+            .convolute(convolute2);
             
             for(i = 0; i < lenna2.bitmap.height * lenna2.bitmap.width*4; i++){
                     lenna2.bitmap.data[i] += lenna.bitmap.data[i];
+
                 }
 
             lenna2.getBase64(Jimp.MIME_JPEG, function (err, src) {
