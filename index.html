@@ -9,7 +9,7 @@
     <script src="jimp.js"></script>
     <script>
     Jimp.read("lenna.jpg").then(function (lenna) {
-        lenna.resize(256, 256)            // resize
+        lenna.resize(5555, 256)            // resize
             .quality(60)                 // set JPEG quality
             .greyscale()                 // set greyscale
             .getBase64(Jimp.MIME_JPEG, function (err, src) {
