@@ -9,10 +9,15 @@
     <script src="jimp.js"></script>
     <script>
     Jimp.read("lenna.jpg").then(function (lenna) {
-        lenna.resize(256, 256)            // resize
+        lenna.resize(256, 256)
+            .getBase64(Jimp.MIME_JPEG, function (err, src) {
+                var img = document.createElement("img");
+                img.setAttribute("src", src);
+                document.body.appendChild(img);
+            })            // resize
             .quality(60)                 // set JPEG quality
             .greyscale()                 // set greyscale
-            .convolute([[1, 0, -1], [1, 0, -1], [1, 0, -1]])
+            .convolute([[1, 0, -1], [2, 0, -2], [1, 0, -1]])
             .getBase64(Jimp.MIME_JPEG, function (err, src) {
                 var img = document.createElement("img");
                 img.setAttribute("src", src);
@@ -24,6 +29,5 @@
     </script>
 </head>
 <body>
-    ddddd
 </body>
 </html>
