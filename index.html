@@ -9,13 +9,12 @@
     <script src="jimp.js"></script>
     <script>
     Jimp.read("lenna.jpg").then(function (lenna) {
-        lenna.resize(256, 256)
-            .getBase64(Jimp.MIME_JPEG, function (err, src) {
+
+        lenna.getBase64(Jimp.MIME_JPEG, function (err, src) {
                 var img = document.createElement("img");
                 img.setAttribute("src", src);
                 document.body.appendChild(img);
-            })            // resize
-            .quality(60)                 // set JPEG quality
+            })     
             .greyscale()                 // set greyscale
             .convolute([[1, 0, -1], [2, 0, -2], [1, 0, -1]])
             .getBase64(Jimp.MIME_JPEG, function (err, src) {
@@ -23,6 +22,37 @@
                 img.setAttribute("src", src);
                 document.body.appendChild(img);
             });
+
+        Jimp.read("lenna.jpg").then(function (lenna2) {
+        lenna2.getBase64(Jimp.MIME_JPEG, function (err, src) {
+                var img = document.createElement("img");
+                img.setAttribute("src", src);
+                document.body.appendChild(img);
+            })     
+            .greyscale()                 // set greyscale
+            .convolute([[1, 2, 1], [0, 0, 0], [-1, -2, -1]])
+
+            .getBase64(Jimp.MIME_JPEG, function (err, src) {
+                var img = document.createElement("img");
+                img.setAttribute("src", src);
+                document.body.appendChild(img);
+            })
+            
+            for(i = 0; i < lenna2.bitmap.height * lenna2.bitmap.width*4; i++){
+                    lenna2.bitmap.data[i] += lenna.bitmap.data[i];
+                }
+
+            lenna2.getBase64(Jimp.MIME_JPEG, function (err, src) {
+                var img = document.createElement("img");
+                img.setAttribute("src", src);
+                document.body.appendChild(img);
+            })
+    }).catch(function (err) {
+        console.error(err);
+    });
+
+
+
     }).catch(function (err) {
         console.error(err);
     });
