@@ -5,6 +5,22 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+
+    <script src="jimp.min.js"></script>
+    <script>
+    Jimp.read("lenna.jpg").then(function (lenna) {
+        lenna.resize(256, 256)            // resize
+            .quality(60)                 // set JPEG quality
+            .greyscale()                 // set greyscale
+            .getBase64(Jimp.MIME_JPEG, function (err, src) {
+                var img = document.createElement("img");
+                img.setAttribute("src", src);
+                document.body.appendChild(img);
+            });
+    }).catch(function (err) {
+        console.error(err);
+    });
+    </script>
 </head>
 <body>
     
