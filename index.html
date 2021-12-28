@@ -10,7 +10,6 @@
     <script src="script.js" type="text/javascript"></script>
 </head>
 <body>
-    <!-- todo: regulacja parametrów, responsywność -->
     <div class="interface">
         <div class="input">
             <label for="file">Wybierz zdjęcie: </label>
@@ -25,10 +24,6 @@
             <label for="weak">Weak threshold: </label> <br />
             <input type="range" name="weak" min="0.09" max="0.29" step="0.01" value="0.2"/> <br />
             <input type="button" name="confirmation" value="Potwierdź" onclick="processInput()" />
-            <!--
-                regulacja parametrów
-                użyć onchange="processInput()"
-            -->
         </div>
     </div>
     <div class="output">
