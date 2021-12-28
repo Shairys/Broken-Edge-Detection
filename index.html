@@ -76,20 +76,17 @@
     let strong;
     let weak;
     function findEdges(image){
-        let convoluteSobelX = [[1, 0, -1], [2, 0, -2], [1, 0, -1]];
-        let convoluteSobelY = [[1, 2, 1], [0, 0, 0], [-1, -2, -1]];
-        let gaussianConvolute = [[2, 4, 5, 4, 2], [4, 9, 12, 9, 4], [5, 12, 15, 12, 5], [4, 9, 12 ,9, 4], [2, 4, 5, 4, 2]];
-        for(i = 0; i < 5; i++)
-            for( j = 0; j < 5; j++)
-                gaussianConvolute[i][j] *= 1/159;
+        let sobelXKernel = [[1, 0, -1], [2, 0, -2], [1, 0, -1]];
+        let sobelYKernel = [[1, 2, 1], [0, 0, 0], [-1, -2, -1]];
+        let gaussianKernel = generateGaussianKernel(5, 1);
 
         let context = document.getElementById('input-canvas').getContext('2d');
         let imageData = context.getImageData(0, 0, image.width, image.height);
         grayscale(imageData);
         let vectorData = imageDataToVector(imageData);
-        vectorData = convoluteVectors(vectorData, gaussianConvolute);
-        let sobelX = convoluteVectors(vectorData, convoluteSobelX);
-        let sobelY = convoluteVectors(vectorData, convoluteSobelY);
+        vectorData = convoluteVectors(vectorData, gaussianKernel);
+        let sobelX = convoluteVectors(vectorData, sobelXKernel);
+        let sobelY = convoluteVectors(vectorData, sobelYKernel);
         vectorData = sobelY;
         let angles = generateAngles(sobelX, sobelY, image.width, image.height);
         vectorData = getAverageData(sobelX, sobelY, image.width, image.height);
@@ -99,7 +96,7 @@
         nonMaximumSupression(angleVectorData, angles, vectorData, image.width, image.height);
         vectorData = angleVectorData;
 
-        strongThreshold = maxValue * 0.2;
+        strongThreshold = maxValue * 0.4;
         weakThreshold = strongThreshold * 0.1;
         strong = 255;
         weak = 50;
@@ -110,6 +107,20 @@
         displayFinalImage(imageData);
     }
     
+    function generateGaussianKernel(size, sigma){
+        let result = newVector(size, size);
+        for(i = 0; i < size; i++){
+            for(j = 0; j < size; j++){
+                let k = (size - 1) / 2;
+                let x = (i + 1 - (k + 1));
+                let y = (j + 1 - (k + 1));
+                let exp = -((x * x + y * y) / (2 * sigma * sigma));
+                result[i][j] = Math.exp(exp) / ( 2 * Math.PI * sigma * sigma);
+            }
+        }
+        return result;
+    }
+
     function hysteresis(vectorData, imageWidth, imageHeight){
         let dirX = [1, 1, 0, -1, -1, -1, 0, 1];
         let dirY = [0, 1, 1, 1, 0, -1, -1, -1];
@@ -180,12 +191,12 @@
         }
     }
 
-    function newVector(width, height){
+    function newVector(width, height, value = 0){
         let result = new Array;
         for(i = 0; i < height; i++){
             result.push([]);
             for(j = 0; j < width; j++){
-                result[i].push(0);
+                result[i].push(value);
             }
         }
         return result;
