@@ -95,9 +95,11 @@
         let angleVectorData = newVector(image.width, image.height);
         nonMaximumSupression(angleVectorData, angles, vectorData, image.width, image.height);
         vectorData = angleVectorData;
-
-        strongThreshold = maxValue * 0.4;
-        weakThreshold = strongThreshold * 0.1;
+        
+        let strongMultiplier = document.getElementsByName("strong")[0].value;
+        let weakMultiplier = document.getElementsByName("weak")[0].value;
+        strongThreshold = maxValue * strongMultiplier;
+        weakThreshold = strongThreshold * weakMultiplier;
         strong = 255;
         weak = 50;
         doubleThreshold(vectorData, image.width, image.height);
@@ -316,10 +318,10 @@
         <div class="config">
             <label for="placeholder1">placeholder1: </label>
             <input type="range" name="placeholder1" /> <br />
-            <label for="placeholder2">placeholder2: </label>
-            <input type="range" name="placeholder2" /> <br />
-            <label for="placeholder3">placeholder3: </label>
-            <input type="range" name="placeholder3" /> <br />
+            <label for="placeholder2">Strong threshold: </label>
+            <input type="range" name="strong" min="0.3" max="0.5" step="0.01" value="0.4"/> <br />
+            <label for="placeholder3">Weak threshold: </label>
+            <input type="range" name="weak" min="0.09" max="0.29" step="0.01" value="0.2"/> <br />
             <!--
                 regulacja parametrów
                 użyć onchange="processInput()"
