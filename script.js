@@ -2,20 +2,11 @@
     HANDLING INPUT
 */
 
-let inputSet = false;
-
 function showImage(image, parent){
     parent.width = image.width;
     parent.height = image.height;
     let context = parent.getContext('2d');
     context.drawImage(image, 0, 0);
-}
-
-function clear(){
-    let images = document.querySelectorAll(".output img");
-    for (let i = 0; i < images.length; i++) {
-        images[i].remove();
-    }
 }
 
 function processInput(){
