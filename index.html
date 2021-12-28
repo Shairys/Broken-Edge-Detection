@@ -8,6 +8,7 @@
 
     <script src="jimp.js"></script>
     <script>
+
     var convoluteSobelX = [[1, 0, -1], [2, 0, -2], [1, 0, -1]];
     var convoluteSobelY = [[1, 2, 1], [0, 0, 0], [-1, -2, -1]];
     var gaussianConvolute = [[2, 4, 5, 4, 2], [4, 9, 12, 9, 4], [5, 12, 15, 12, 5], [4, 9, 12 ,9, 4], [2, 4, 5, 4, 2]];
@@ -15,12 +16,7 @@
         for( j = 0; j < 5; j++)
             gaussianConvolute[i][j] *= 1/159;
 
-    function inBounds(y, x, yMax, xMax){
-        if(y < 0 || y >= yMax) return false;
-        if(x < 0 || x >= xMax) return false;
-        return true;
-    }
-        
+
     Jimp.read("lenna.jpg").then(function (lenna) {
         Jimp.read("lenna.jpg").then(function (lenna2) {
 
@@ -37,8 +33,8 @@
                 var img = document.createElement("img");
                 img.setAttribute("src", src);
                 document.body.appendChild(img);
-            })
-            .convolute(convoluteSobelX)
+            });
+         lenna.convolute(convoluteSobelX);
 
         lenna2.greyscale() 
             .convolute(gaussianConvolute)
