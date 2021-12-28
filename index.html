@@ -56,14 +56,6 @@
         else return value;
     }
 
-    var convoluteSobelX = [[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]];
-    var convoluteSobelY = [[1, 2, 1], [0, 0, 0], [-1, -2, -1]];
-    var gaussianConvolute = [[2, 4, 5, 4, 2], [4, 9, 12, 9, 4], [5, 12, 15, 12, 5], [4, 9, 12 ,9, 4], [2, 4, 5, 4, 2]];
-    for(i = 0; i < 5; i++)
-        for( j = 0; j < 5; j++)
-            gaussianConvolute[i][j] *= 1/159;
-
-
     Jimp.read("lenna.jpg").then(function (lenna) {
         Jimp.read("lenna.jpg").then(function (lenna2) {
 
@@ -117,7 +109,7 @@
                 document.body.appendChild(img);
             }) 
 
-        var Direction = new Array;
+        
         for(i = 0; i < lenna2.bitmap.width; i++){
             Direction.push([]);
             for(j = 0; j < lenna2.bitmap.height; j++){
@@ -245,16 +237,68 @@
     }).catch(function (err) {
         console.error(err);
     });
+
+    function findEdges(image){
+        let convoluteSobelX = [[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]];
+        let convoluteSobelY = [[1, 2, 1], [0, 0, 0], [-1, -2, -1]];
+        let gaussianConvolute = [[2, 4, 5, 4, 2], [4, 9, 12, 9, 4], [5, 12, 15, 12, 5], [4, 9, 12 ,9, 4], [2, 4, 5, 4, 2]];
+        for(i = 0; i < 5; i++)
+            for( j = 0; j < 5; j++)
+                gaussianConvolute[i][j] *= 1/159;
+
+        let context = document.getElementById('input-canvas').getContext('2d');
+        let imageData = context.getImageData(0, 0, imageWidth, imageHeight);
+        grayscale(imageData);
+        let vectorData = imageDataToVector();
+        vectorData = convoluteVectors(vectorData, gaussianConvolute);
+        let sobelX = convoluteVectors(vectorData, convoluteSobelX);
+        let sobelY = convoluteVectors(vectorData, convoluteSobelY);
+        let angles = generateAngles();
+
+        displayFinalImage(image.width, image.height, imageData);
+    }
+    
+    function getAngles(sobelX, sobelY, imageWidth, imageHeight){
+        let result = new Array;
+        for(i = 0; i < imageWidth; i++){
+            result.push([]);
+            for(j = 0; j < imageHeight; j++){
+                var colorGx = sobelX[i][j];
+                var colorGy = sobelY[i][j];
+                var angle = Math.atan2(colorGy, colorGx);
+                result[i].push(angle);
+            }
+        }
+        return result;
+    }
+
+    function grayscale(imageData){
+        for(let i = 0; i < imageData.data.length; i += 4){
+            let lightness = parseInt(imageData.data[i] * 0.2126 + imageData.data[i + 1] * 0.7152 + imageData.data[i + 2] * 0.0722);
+            imageData.data[i] = lightness;
+            imageData.data[i + 1] = lightness;
+            imageData.data[i + 2] = lightness;
+        }
+    }
+
+    function displayFinalImage(imageWidth, imageHeight, imageData){
+        let canvas = document.getElementById('output-canvas');
+        let context = canvas.getContext('2d');
+        canvas.width = imageWidth;
+        canvas.height = imageHeight;
+        context.putImageData(imageData, 0, 0);
+    }
     </script>
+
     <script>
         let inputSet = false;
 
         function showImage(image, parent){
-            const previewContainer = document.querySelector("#preview-container");
             parent.width = image.width;
             parent.height = image.height;
             let context = parent.getContext('2d');
             context.drawImage(image, 0, 0);
+            findEdges(image);
         }
 
         function clear(){
@@ -322,8 +366,4 @@
     <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
 </body>
 
-
-<script>
-
-</script>
 </html>
