@@ -254,6 +254,9 @@
         let sobelX = convoluteVectors(vectorData, convoluteSobelX);
         let sobelY = convoluteVectors(vectorData, convoluteSobelY);
         let angles = generateAngles();
+        let maxValue = 0;
+        for(i = 0; i < image.width; i++)
+            for(j = 0; j < image.width;)
 
         displayFinalImage(image.width, image.height, imageData);
     }
