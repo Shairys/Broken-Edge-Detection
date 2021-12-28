@@ -9,7 +9,7 @@
     <script src="jimp.js"></script>
     <script>
 
-    var convoluteSobelX = [[1, 0, -1], [2, 0, -2], [1, 0, -1]];
+    var convoluteSobelX = [[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]];
     var convoluteSobelY = [[1, 2, 1], [0, 0, 0], [-1, -2, -1]];
     var gaussianConvolute = [[2, 4, 5, 4, 2], [4, 9, 12, 9, 4], [5, 12, 15, 12, 5], [4, 9, 12 ,9, 4], [2, 4, 5, 4, 2]];
     for(i = 0; i < 5; i++)
@@ -34,6 +34,8 @@
                 img.setAttribute("src", src);
                 document.body.appendChild(img);
             });
+
+            
          lenna.convolute(convoluteSobelX);
 
         lenna2.greyscale() 
@@ -94,7 +96,7 @@
                 if(angle > 180 || angle < 0)
                     console.log(angle);
                 var color = Jimp.intToRGBA(lenna2.getPixelColor(i, j)).r;
-                var q = 0, r = 0;
+                var q, r;
 
                 if( (angle >= 0 && angle < 22.5) || (angle >= 157.5 && angle <= 180) ){
                         q = Jimp.intToRGBA(lenna2.getPixelColor(i, j + 1)).r;
