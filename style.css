@@ -1,0 +1,50 @@
+body {
+    margin: 0;
+    padding: 20px;
+}
+
+.interface {
+    display: flex;
+}
+
+.interface > div {
+    border: 2px solid #292f36;
+    border-radius: 15px;
+    margin: 20px;
+    padding: 20px;
+}
+
+.input input[name=confirmation] {
+    display: block;
+    margin: 30px auto 0 auto;
+    width: 100px;
+    height: 35px;
+}
+
+.input label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.output {
+    border: 2px solid #292f36;
+    border-radius: 15px;
+    margin: 20px;
+}
+
+.output > div {
+    padding: 20px;
+    text-align: center;
+}
+
+#input-container {
+    border-bottom: 2px dashed #292f36;
+}
+
+.output p {
+    margin-top: 10px;
+}
+
+img {
+    max-width: 100%;
+}
