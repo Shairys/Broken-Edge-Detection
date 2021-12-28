@@ -24,11 +24,13 @@
         for (let i = 0; i < vectorRows; i++) {
             for (let j = 0; j < vectorCols; j++) {
                 for (let k = 0; k < kernelRows; k++) {
+                    let kk = kernelRows - 1 - k;
                     for (let l = 0; l < kernelCols; l++) {
+                        let ll = kernelCols - 1 - l;
                         let x, y;
-                        y = i + (k - kernelMidY);
-                        x = j + (l - kernelMidX);
-                        if (y >= 0 && x >= 0 && y < vectorRows && x < vectorCols) result[i][j] += vector[y][x] * kernel[k][l];
+                        y = i + kk - kernelMidY;
+                        x = j + ll - kernelMidX;
+                        if (y >= 0 && x >= 0 && y < vectorRows && x < vectorCols) result[i][j] += vector[y][x] * kernel[ll][kk];
                     }
                 }
             }
@@ -48,6 +50,11 @@
         return result;
     }
 
+    function clamp(value, min, max){
+        if (value < min) return min;
+        else if (value > max) return max;
+        else return value;
+    }
 
     var convoluteSobelX = [[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]];
     var convoluteSobelY = [[1, 2, 1], [0, 0, 0], [-1, -2, -1]];
@@ -58,7 +65,6 @@
 
 
     Jimp.read("lenna.jpg").then(function (lenna) {
-        console.log(bitmapToVector(lenna));
         Jimp.read("lenna.jpg").then(function (lenna2) {
 
 
@@ -68,7 +74,7 @@
                 var img = document.createElement("img");
                 img.setAttribute("src", src);
                 document.body.appendChild(img);
-            })     
+            })
             .convolute(gaussianConvolute)
             .getBase64(Jimp.MIME_JPEG, function (err, src) {
                 var img = document.createElement("img");
@@ -89,6 +95,22 @@
         //     // g = Math.sqrt(gx*gx + gy*gy);
         //     // lenna2.bitmap.data[i] = g;
         // }
+
+        // let vecLenna = bitmapToVector(lenna);
+            
+        //     vecLenna = convoluteVectors(vecLenna, gaussianConvolute);
+        //     var imgLenna = new Jimp(lenna.bitmap.width, lenna.bitmap.height, 0x000000FF, function(err, image){});
+        //     for (let i = 0; i < lenna.bitmap.height; i++) {
+        //         for (let j = 0; j < lenna.bitmap.width; j++) {
+        //             imgLenna.setPixelColor(Jimp.rgbaToInt(clamp(Math.abs(vecLenna[i][j]), 0, 255), clamp(Math.abs(vecLenna[i][j]), 0, 255), clamp(Math.abs(vecLenna[i][j]), 0, 255), 255), j, i);
+        //         }
+        //     }
+        //     imgLenna.getBase64(Jimp.MIME_JPEG, function (err, src) {
+        //         var img = document.createElement("img");
+        //         img.setAttribute("src", src);
+        //         document.body.appendChild(img);
+        //     });
+
         lenna2.getBase64(Jimp.MIME_JPEG, function (err, src) {
                 var img = document.createElement("img");
                 img.setAttribute("src", src);
