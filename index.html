@@ -38,7 +38,7 @@
         return result;
     }
 
-    function bitmapToVector(jimpImage){
+    function jimpImageToVector(jimpImage){
         let result = [[]];
         for (let i = 0; i < jimpImage.bitmap.height; i++) {
             if (i != 0) result.push([]);
@@ -48,6 +48,29 @@
             }
         }
         return result;
+    }
+
+    function imageDataToVector(imageData){
+        let result = [[]];
+        for (let i = 0; i < imageData.height; i++) {
+            if (i != 0) result.push([]);
+            for (let j = 0; j < imageData.width; j++) {
+                let value = imageData.data[i * width * 4 + j * 4];
+                result[i].push(value);
+            }
+        }
+        return result;
+    }
+
+    function vectorToImageData(vector, imageData){
+        for (let i = 0; i < imageData.height; i++) {
+            for (let j = 0; j < imageData.width; j++) {
+                imageData[i * width * 4 + j * 4] = vector[i][j];
+                imageData[i * width * 4 + j * 4 + 1] = vector[i][j];
+                imageData[i * width * 4 + j * 4 + 2] = vector[i][j];
+                imageData[i * width * 4 + j * 4 + 3] = 255;
+            }
+        }
     }
 
     function clamp(value, min, max){
@@ -88,7 +111,7 @@
         //     // lenna2.bitmap.data[i] = g;
         // }
 
-        // let vecLenna = bitmapToVector(lenna);
+        // let vecLenna = jimpImageToVector(lenna);
             
         //     vecLenna = convoluteVectors(vecLenna, gaussianConvolute);
         //     var imgLenna = new Jimp(lenna.bitmap.width, lenna.bitmap.height, 0x000000FF, function(err, image){});
