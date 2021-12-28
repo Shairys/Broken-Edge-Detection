@@ -200,8 +200,8 @@ function convoluteVectors(vector, kernel){
                     secondNeighbour = originalData[i][j - 1];
                 }
                 else if(angle >= 22.5 && angle < 67.5){
-                    firstNeighbour = originalData[i - 1][j - 1];
-                    secondNeighbour = originalData[i + 1][j + 1];
+                    firstNeighbour = originalData[i + 1][j + 1];
+                    secondNeighbour = originalData[i - 1][j - 1];
                 }
                 else if(angle >= 67.5 && angle < 112.5){
                     firstNeighbour = originalData[i + 1][j];
@@ -214,8 +214,6 @@ function convoluteVectors(vector, kernel){
                 if(value >= firstNeighbour && value >= secondNeighbour){
                     vectorData[i][j] = value;
                 }
-                else
-                    vectorData[i][j] = 0;
             }
         }
     }
@@ -240,7 +238,7 @@ function convoluteVectors(vector, kernel){
         }
         for(i = 0; i < imageHeight; i++){
             for(j = 0; j < imageWidth; j++){
-               vectorData[i][j] *= 255/maxValue;
+               vectorData[i][j] *= 255 / maxValue;
             }
         }
         return maxValue;
@@ -253,7 +251,7 @@ function convoluteVectors(vector, kernel){
             for(j = 0; j < imageWidth; j++){
                 let colorGx = sobelX[i][j];
                 let colorGy = sobelY[i][j];
-                let G = Math.sqrt(colorGx*colorGx + colorGy*colorGy);
+                let G = Math.sqrt(colorGx * colorGx + colorGy * colorGy);
                 G = Math.min(255, G);
                 result[i].push(G);
             }
