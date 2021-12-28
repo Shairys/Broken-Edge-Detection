@@ -9,6 +9,45 @@
     <script src="jimp.js"></script>
     <script>
 
+    function convoluteVectors(vector, kernel){
+        let result = [[]];
+        for (let i = 0; i < vector.length; i++) {
+            if (i != 0) result.push([]);
+            for (let j = 0; j < vector[i].length; j++) {
+                result[i].push(0);
+            }
+        }
+        let kernelRows = kernel.length, kernelCols = kernel[0].length;
+        let vectorRows = vector.length, vectorCols = vector[0].length;
+        let kernelMidX = Math.floor(kernelCols / 2);
+        let kernelMidY = Math.floor(kernelRows / 2);
+        for (let i = 0; i < vectorRows; i++) {
+            for (let j = 0; j < vectorCols; j++) {
+                for (let k = 0; k < kernelRows; k++) {
+                    for (let l = 0; l < kernelCols; l++) {
+                        let x, y;
+                        y = i + (k - kernelMidY);
+                        x = j + (l - kernelMidX);
+                        if (y >= 0 && x >= 0 && y < vectorRows && x < vectorCols) result[i][j] += vector[y][x] * kernel[k][l];
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    function bitmapToVector(jimpImage){
+        let result = [[]];
+        for (let i = 0; i < jimpImage.bitmap.height; i++) {
+            if (i != 0) result.push([]);
+            for (let j = 0; j < jimpImage.bitmap.width; j++) {
+                let value = Jimp.intToRGBA(jimpImage.getPixelColor(j, i)).r;
+                result[i].push(value);
+            }
+        }
+        return result;
+    }
+
     var convoluteSobelX = [[1, 0, -1], [2, 0, -2], [1, 0, -1]];
     var convoluteSobelY = [[1, 2, 1], [0, 0, 0], [-1, -2, -1]];
     var gaussianConvolute = [[2, 4, 5, 4, 2], [4, 9, 12, 9, 4], [5, 12, 15, 12, 5], [4, 9, 12 ,9, 4], [2, 4, 5, 4, 2]];
@@ -18,6 +57,7 @@
 
 
     Jimp.read("lenna.jpg").then(function (lenna) {
+        console.log(bitmapToVector(lenna));
         Jimp.read("lenna.jpg").then(function (lenna2) {
 
 
