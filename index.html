@@ -48,6 +48,7 @@
         return result;
     }
 
+
     var convoluteSobelX = [[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]];
     var convoluteSobelY = [[1, 2, 1], [0, 0, 0], [-1, -2, -1]];
     var gaussianConvolute = [[2, 4, 5, 4, 2], [4, 9, 12, 9, 4], [5, 12, 15, 12, 5], [4, 9, 12 ,9, 4], [2, 4, 5, 4, 2]];
@@ -226,21 +227,12 @@
     <script>
         let inputSet = false;
 
-        function bufferToBase64(buffer){
-            let output = "";
-            let data = new Uint8Array(buffer);
-            for (let i = 0; i < data.byteLength; i++) {
-                output += String.fromCharCode(data[i]);
-            }
-            return window.btoa(output);
-        }
-
-        function showImage(base64, parent){
+        function showImage(image, parent){
             const previewContainer = document.querySelector("#preview-container");
-            let src = "data:image/jpg;base64," + base64;
-            let img = document.createElement("img");
-            img.setAttribute("src", src);
-            parent.appendChild(img);
+            parent.width = image.width;
+            parent.height = image.height;
+            let context = parent.getContext('2d');
+            context.drawImage(image, 0, 0);
         }
 
         function clear(){
@@ -254,23 +246,19 @@
             const inputFileElement = document.querySelector(".input input[name=file]");
             const fileList = inputFileElement.files;
             const file = fileList[0];
-            const inputElement = document.querySelector("#input-container");
+            const inputElement = document.querySelector("#input-canvas");
             const outputElement = document.querySelector("#output-container");
 
             if (file && file.type.startsWith("image")) {
                 const reader = new FileReader();
-                reader.readAsArrayBuffer(file);
-                reader.addEventListener("load", function(){
-                    if (inputSet) clear();
-                    inputSet = true;
-                    let buffer = reader.result;
-                    showImage(bufferToBase64(buffer), inputElement);
-
-                    // processing
-
-                    // showImage(outputSrc, outputElement)
-
-                });
+                reader.onload = function(){
+                    let image = new Image();
+                    image.onload = function(){
+                        showImage(image, inputElement);
+                    }
+                    image.src = reader.result;
+                }
+                reader.readAsDataURL(file);
             }
         }
     </script>
@@ -300,13 +288,20 @@
     <div class="output">
         <div id="input-container">
             <p>Plik wejściowy: </p>
+            <canvas id="input-canvas" width="400" height="400"></canvas>
         </div>
         <div id="output-container">
             <p>Plik wyjściowy: </p>
+            <canvas id="output-canvas" width="400" height="400"></canvas>
         </div>
     </div>
     <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
     <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
     <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
 </body>
+
+
+<script>
+
+</script>
 </html>
