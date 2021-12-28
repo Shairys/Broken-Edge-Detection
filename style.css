@@ -14,7 +14,7 @@ body {
     padding: 20px;
 }
 
-.input input[name=confirmation] {
+input[name=confirmation] {
     display: block;
     margin: 30px auto 0 auto;
     width: 100px;
@@ -45,6 +45,6 @@ body {
     margin-top: 10px;
 }
 
-img {
-    max-width: 100%;
+canvas {
+    width: 100;
 }
