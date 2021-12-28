@@ -17,12 +17,13 @@
             <input type="button" name="confirmation" value="Potwierdź" onclick="processInput()" />
         </div>
         <div class="config">
-            <label for="placeholder1">placeholder1: </label>
-            <input type="range" name="placeholder1" /> <br />
-            <label for="placeholder2">placeholder2: </label>
-            <input type="range" name="placeholder2" /> <br />
-            <label for="placeholder3">placeholder3: </label>
-            <input type="range" name="placeholder3" /> <br />
+            <label for="sigma">Sigma: </label><br />
+            <input type="range" name="sigma" max="2.5" min="0.5" step="0.05" value="1"/> <br />
+            <label for="strong">Strong threshold: </label> <br />
+            <input type="range" name="strong" min="0.3" max="0.5" step="0.01" value="0.4"/> <br />
+            <label for="weak">Weak threshold: </label> <br />
+            <input type="range" name="weak" min="0.09" max="0.29" step="0.01" value="0.2"/> <br />
+            <input type="button" name="confirmation" value="Potwierdź" onclick="processInput()" />
             <!--
                 regulacja parametrów
                 użyć onchange="processInput()"

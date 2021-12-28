@@ -42,6 +42,7 @@ function processInput(){
 /*
     HANDLING IMAGE
 */
+
 function convoluteVectors(vector, kernel){
         let result = [[]];
         for (let i = 0; i < vector.length; i++) {
