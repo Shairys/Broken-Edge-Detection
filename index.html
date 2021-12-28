@@ -5,8 +5,6 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-
-    <script src="jimp.js"></script>
     <script>
 
     function convoluteVectors(vector, kernel){
@@ -101,7 +99,7 @@
         nonMaximumSupression(angleVectorData, angles, vectorData, image.width, image.height);
         vectorData = angleVectorData;
 
-        strongThreshold = maxValue * 0.3;
+        strongThreshold = maxValue * 0.2;
         weakThreshold = strongThreshold * 0.1;
         strong = 255;
         weak = 50;
