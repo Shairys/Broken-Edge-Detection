@@ -48,7 +48,7 @@
         return result;
     }
 
-    var convoluteSobelX = [[1, 0, -1], [2, 0, -2], [1, 0, -1]];
+    var convoluteSobelX = [[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]];
     var convoluteSobelY = [[1, 2, 1], [0, 0, 0], [-1, -2, -1]];
     var gaussianConvolute = [[2, 4, 5, 4, 2], [4, 9, 12, 9, 4], [5, 12, 15, 12, 5], [4, 9, 12 ,9, 4], [2, 4, 5, 4, 2]];
     for(i = 0; i < 5; i++)
@@ -74,6 +74,8 @@
                 img.setAttribute("src", src);
                 document.body.appendChild(img);
             });
+
+            
          lenna.convolute(convoluteSobelX);
 
         lenna2.greyscale() 
@@ -125,16 +127,11 @@
                 img.setAttribute("src", src);
                 document.body.appendChild(img);
             }) 
-
-            //console.log(Direction);
         for(i = 1; i < lenna2.bitmap.width - 1; i++){
             for(j = 1; j < lenna2.bitmap.height - 1; j++){
                 var angle = Direction[i][j] * 180 / Math.PI;
-
-                if(angle > 180 || angle < 0)
-                    console.log(angle);
                 var color = Jimp.intToRGBA(lenna2.getPixelColor(i, j)).r;
-                var q = 0, r = 0;
+                var q, r;
 
                 if( (angle >= 0 && angle < 22.5) || (angle >= 157.5 && angle <= 180) ){
                         q = Jimp.intToRGBA(lenna2.getPixelColor(i, j + 1)).r;
@@ -164,7 +161,60 @@
                 document.body.appendChild(img);
             })
 
+        strongThreshold = maxG * 0.5;
+        weakThreshold = strongThreshold * 0.1;
+        strong = 255;
+        weak = 50;
+        for(i = 0; i < image.bitmap.width; i++){
+        for(j = 0; j < image.bitmap.height; j++){
+            var color = Jimp.intToRGBA(image.getPixelColor(i, j)).r;
+            if(color >= strongThreshold)
+                image.setPixelColor(Jimp.rgbaToInt(strong, strong, strong, 255), i, j);
+            else if(color >= weakThreshold)
+                image.setPixelColor(Jimp.rgbaToInt(weak, weak, weak, 255), i, j);
+            else
+                image.setPixelColor(Jimp.rgbaToInt(0, 0, 0, 255), i, j);
+        }}
 
+        image.getBase64(Jimp.MIME_JPEG, function (err, src) {
+                var img = document.createElement("img");
+                img.setAttribute("src", src);
+                document.body.appendChild(img);
+            })
+        
+        dirX = [1, 1, 0, -1, -1, -1, 0, 1];
+        dirY = [0, 1, 1, 1, 0, -1, -1, -1];
+
+        for(i = 1; i < image.bitmap.width - 1; i++){
+        for(j = 1; j < image.bitmap.height - 1; j++){
+
+            var color = Jimp.intToRGBA(image.getPixelColor(i, j)).r;
+            if(color == weak){
+                found = false;
+                for(var k = 0; k < 8; k++){
+                    var newX = i + dirX[k];
+                    var newY = j + dirY[k];
+                    var neighbourColor = Jimp.intToRGBA(image.getPixelColor(newX, newY)).r;
+                    if(neighbourColor == strong){
+                        found = true;
+                        image.setPixelColor(Jimp.rgbaToInt(strong, strong, strong, 255), i, j);
+                        break;
+                    }
+                }
+                if(!found){
+                    image.setPixelColor(Jimp.rgbaToInt(0, 0, 0, 255), i, j);
+
+                }
+            }
+
+        }}
+
+        image.getBase64(Jimp.MIME_JPEG, function (err, src) {
+                var img = document.createElement("img");
+                img.setAttribute("src", src);
+                document.body.appendChild(img);
+            })
+        
 
         }).catch(function (err) {
         console.error(err);

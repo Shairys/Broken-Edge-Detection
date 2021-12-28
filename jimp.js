@@ -44811,9 +44811,9 @@ var _default = function _default() {
       var source = this.cloneQuiet();
       this.scanQuiet(x, y, w, h, function (xx, yx, idx) {
         var value = applyKernel(source, kernel, xx, yx);
-        this.bitmap.data[idx] = this.constructor.limit255(value[0]);
-        this.bitmap.data[idx + 1] = this.constructor.limit255(value[1]);
-        this.bitmap.data[idx + 2] = this.constructor.limit255(value[2]);
+        this.bitmap.data[idx] = this.constructor.limit255(Math.abs(value[0]));
+        this.bitmap.data[idx + 1] = this.constructor.limit255(Math.abs(value[1]));
+        this.bitmap.data[idx + 2] = this.constructor.limit255(Math.abs(value[2]));
       });
 
       if ((0, _utils.isNodePattern)(cb)) {
