@@ -1,13 +1,48 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
+/*
+    HANDLING INPUT
+*/
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script>
+let inputSet = false;
 
-    function convoluteVectors(vector, kernel){
+function showImage(image, parent){
+    parent.width = image.width;
+    parent.height = image.height;
+    let context = parent.getContext('2d');
+    context.drawImage(image, 0, 0);
+}
+
+function clear(){
+    let images = document.querySelectorAll(".output img");
+    for (let i = 0; i < images.length; i++) {
+        images[i].remove();
+    }
+}
+
+function processInput(){
+    const inputFileElement = document.querySelector(".input input[name=file]");
+    const fileList = inputFileElement.files;
+    const file = fileList[0];
+    const inputElement = document.querySelector("#input-canvas");
+    const outputElement = document.querySelector("#output-container");
+
+    if (file && file.type.startsWith("image")) {
+        const reader = new FileReader();
+        reader.onload = function(){
+            let image = new Image();
+            image.onload = function(){
+                showImage(image, inputElement);
+                findEdges(image);
+            }
+            image.src = reader.result;
+        }
+        reader.readAsDataURL(file);
+    }
+}
+
+/*
+    HANDLING IMAGE
+*/
+function convoluteVectors(vector, kernel){
         let result = [[]];
         for (let i = 0; i < vector.length; i++) {
             if (i != 0) result.push([]);
@@ -33,7 +68,10 @@
                 }
             }
         }
-
+        for (let i = 0; i < vectorRows; i++) 
+            for (let j = 0; j < vectorCols; j++) {
+                result[i][j] = Math.abs(result[i][j]);
+        }
         return result;
     }
 
@@ -53,13 +91,19 @@
 
         for (let i = 0; i < imageData.height; i++) {
             for (let j = 0; j < imageData.width; j++) {
-                let value = Math.abs(vector[i][j]);
+                let value = vector[i][j];
                 imageData.data[i * imageData.width * 4 + j * 4] = value;
                 imageData.data[i * imageData.width * 4 + j * 4 + 1] = value;
                 imageData.data[i * imageData.width * 4 + j * 4 + 2] = value;
                 imageData.data[i * imageData.width * 4 + j * 4 + 3] = 255;
             }
         }
+    }
+
+    function clamp(value, min, max){
+        if (value < min) return min;
+        else if (value > max) return max;
+        else return value;
     }
 
     let strongThreshold;
@@ -69,7 +113,8 @@
     function findEdges(image){
         let sobelXKernel = [[1, 0, -1], [2, 0, -2], [1, 0, -1]];
         let sobelYKernel = [[1, 2, 1], [0, 0, 0], [-1, -2, -1]];
-        let gaussianKernel = generateGaussianKernel(5, 1.4);
+        let sigma = document.getElementsByName("sigma")[0].value;
+        let gaussianKernel = generateGaussianKernel(5, sigma);
 
         let context = document.getElementById('input-canvas').getContext('2d');
         let imageData = context.getImageData(0, 0, image.width, image.height);
@@ -78,16 +123,19 @@
         vectorData = convoluteVectors(vectorData, gaussianKernel);
         let sobelX = convoluteVectors(vectorData, sobelXKernel);
         let sobelY = convoluteVectors(vectorData, sobelYKernel);
-        let angles = generateAngles(sobelX, sobelY, imageData.width, imageData.height);
-        vectorData = getAverageData(sobelX, sobelY, imageData.width, imageData.height);
-        let maxValue = normalize(vectorData, imageData.width, imageData.height);
+        vectorData = sobelY;
+        let angles = generateAngles(sobelX, sobelY, image.width, image.height);
+        vectorData = getAverageData(sobelX, sobelY, image.width, image.height);
+        let maxValue = normalize(vectorData, image.width, image.height);
         
-        let angleVectorData = newVector(imageData.width, imageData.height);
-        nonMaximumSupression(angleVectorData, angles, vectorData, imageData.width, imageData.height);
+        let angleVectorData = newVector(image.width, image.height);
+        nonMaximumSupression(angleVectorData, angles, vectorData, image.width, image.height);
         vectorData = angleVectorData;
-
-        strongThreshold = maxValue * 0.2;
-        weakThreshold = strongThreshold * 0.05;
+        
+        let strongMultiplier = document.getElementsByName("strong")[0].value;
+        let weakMultiplier = document.getElementsByName("weak")[0].value;
+        strongThreshold = maxValue * strongMultiplier;
+        weakThreshold = strongThreshold * weakMultiplier;
         strong = 255;
         weak = 50;
         doubleThreshold(vectorData, image.width, image.height);
@@ -156,8 +204,6 @@
         for(i = 1; i < imageHeight - 1; i++){
             for(j = 1; j < imageWidth - 1; j++){
                 let angle = angles[i][j] * 180 / Math.PI;
-                if(angle < 0)
-                    angle += 180;
                 let value = originalData[i][j];
                 let firstNeighbour, secondNeighbour;
                 if( (angle >= 0 && angle < 22.5) || (angle >= 157.5 && angle <= 180) ){
@@ -165,22 +211,20 @@
                     secondNeighbour = originalData[i][j - 1];
                 }
                 else if(angle >= 22.5 && angle < 67.5){
-                    firstNeighbour = originalData[i - 1][j - 1];
-                    secondNeighbour = originalData[i + 1][j + 1];
+                    firstNeighbour = originalData[i - 1][j + 1];
+                    secondNeighbour = originalData[i + 1][j - 1];
                 }
                 else if(angle >= 67.5 && angle < 112.5){
                     firstNeighbour = originalData[i + 1][j];
                     secondNeighbour = originalData[i - 1][j];
                 }
                 else if(angle >= 112.5 && angle < 157.5){
-                    firstNeighbour = originalData[i + 1][j - 1];
-                    secondNeighbour = originalData[i - 1][j + 1];
+                    firstNeighbour = originalData[i + 1][j + 1];
+                    secondNeighbour = originalData[i - 1][j - 1];
                 }
                 if(value >= firstNeighbour && value >= secondNeighbour){
                     vectorData[i][j] = value;
                 }
-                else
-                    vectorData[i][j] = 0;
             }
         }
     }
@@ -218,8 +262,8 @@
             for(j = 0; j < imageWidth; j++){
                 let colorGx = sobelX[i][j];
                 let colorGy = sobelY[i][j];
-                let G = Math.sqrt(colorGx * colorGx + colorGy * colorGy);
-                G = Math.min(255, G); 
+                let G = Math.sqrt(colorGx*colorGx + colorGy*colorGy);
+                G = Math.min(255, G);
                 result[i].push(G);
             }
         }
@@ -231,6 +275,7 @@
         for(i = 0; i < imageHeight; i++){
             result.push([]);
             for(j = 0; j < imageWidth; j++){
+
                 let colorGx = sobelX[i][j];
                 let colorGy = sobelY[i][j];
                 let angle = Math.atan2(colorGx, colorGy);
@@ -256,80 +301,3 @@
         canvas.height = imageData.height;
         context.putImageData(imageData, 0, 0);
     }
-    </script>
-
-    <script>
-        let inputSet = false;
-
-        function showImage(image, parent){
-            parent.width = image.width;
-            parent.height = image.height;
-            let context = parent.getContext('2d');
-            context.drawImage(image, 0, 0);
-        }
-
-        function clear(){
-            let images = document.querySelectorAll(".output img");
-            for (let i = 0; i < images.length; i++) {
-                images[i].remove();
-            }
-        }
-
-        function processInput(){
-            const inputFileElement = document.querySelector(".input input[name=file]");
-            const fileList = inputFileElement.files;
-            const file = fileList[0];
-            const inputElement = document.querySelector("#input-canvas");
-            const outputElement = document.querySelector("#output-container");
-
-            if (file && file.type.startsWith("image")) {
-                const reader = new FileReader();
-                reader.onload = function(){
-                    let image = new Image();
-                    image.onload = function(){
-                        showImage(image, inputElement);
-                        findEdges(image);
-                    }
-                    image.src = reader.result;
-                }
-                reader.readAsDataURL(file);
-            }
-        }
-    </script>
-    <link href="style.css" type="text/css" rel="stylesheet">
-</head>
-<body>
-    <!-- todo: regulacja parametrów, responsywność -->
-    <div class="interface">
-        <div class="input">
-            <label for="file">Wybierz zdjęcie: </label>
-            <input type="file" name="file" /><br />
-            <input type="button" name="confirmation" value="Potwierdź" onclick="processInput()" />
-        </div>
-        <div class="config">
-            <label for="placeholder1">placeholder1: </label>
-            <input type="range" name="placeholder1" /> <br />
-            <label for="placeholder2">placeholder2: </label>
-            <input type="range" name="placeholder2" /> <br />
-            <label for="placeholder3">placeholder3: </label>
-            <input type="range" name="placeholder3" /> <br />
-            <!--
-                regulacja parametrów
-                użyć onchange="processInput()"
-            -->
-        </div>
-    </div>
-    <div class="output">
-        <div id="input-container">
-            <p>Plik wejściowy: </p>
-            <canvas id="input-canvas" width="400" height="400"></canvas>
-        </div>
-        <div id="output-container">
-            <p>Plik wyjściowy: </p>
-            <canvas id="output-canvas" width="400" height="400"></canvas>
-        </div>
-    </div>
-
-</body>
-
-</html>
