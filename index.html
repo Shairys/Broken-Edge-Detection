@@ -35,17 +35,9 @@
                 }
             }
         }
-        return result;
-    }
-
-    function jimpImageToVector(jimpImage){
-        let result = [[]];
-        for (let i = 0; i < jimpImage.bitmap.height; i++) {
-            if (i != 0) result.push([]);
-            for (let j = 0; j < jimpImage.bitmap.width; j++) {
-                let value = Jimp.intToRGBA(jimpImage.getPixelColor(j, i)).r;
-                result[i].push(value);
-            }
+        for (let i = 0; i < vectorRows; i++) 
+            for (let j = 0; j < vectorCols; j++) {
+                result[i][j] = Math.abs(result[i][j]);
         }
         return result;
     }
@@ -63,12 +55,14 @@
     }
 
     function vectorToImageData(vector, imageData){
+
         for (let i = 0; i < imageData.height; i++) {
             for (let j = 0; j < imageData.width; j++) {
-                imageData[i * imageData.width * 4 + j * 4] = vector[i][j];
-                imageData[i * imageData.width * 4 + j * 4 + 1] = vector[i][j];
-                imageData[i * imageData.width * 4 + j * 4 + 2] = vector[i][j];
-                imageData[i * imageData.width * 4 + j * 4 + 3] = 255;
+                let value = vector[i][j];
+                imageData.data[i * imageData.width * 4 + j * 4] = value;
+                imageData.data[i * imageData.width * 4 + j * 4 + 1] = value;
+                imageData.data[i * imageData.width * 4 + j * 4 + 2] = value;
+                imageData.data[i * imageData.width * 4 + j * 4 + 3] = 255;
             }
         }
     }
@@ -79,166 +73,12 @@
         else return value;
     }
 
-    // Jimp.read("lenna.jpg").then(function (lenna) {
-    //     Jimp.read("lenna.jpg").then(function (lenna2) {
-
-
-
-
-    //     // for(i = 0; i < lenna2.bitmap.width*lenna2.bitmap.height*4; i++){
-    //     //     gx = lenna.bitmap.data[i];
-    //     //     gy = lenna2.bitmap.data[i];
-    //     //     // g = Math.sqrt(gx*gx + gy*gy);
-    //     //     // lenna2.bitmap.data[i] = g;
-    //     // }
-
-    //     // let vecLenna = jimpImageToVector(lenna);
-            
-    //     //     vecLenna = convoluteVectors(vecLenna, gaussianConvolute);
-    //     //     var imgLenna = new Jimp(lenna.bitmap.width, lenna.bitmap.height, 0x000000FF, function(err, image){});
-    //     //     for (let i = 0; i < lenna.bitmap.height; i++) {
-    //     //         for (let j = 0; j < lenna.bitmap.width; j++) {
-    //     //             imgLenna.setPixelColor(Jimp.rgbaToInt(clamp(Math.abs(vecLenna[i][j]), 0, 255), clamp(Math.abs(vecLenna[i][j]), 0, 255), clamp(Math.abs(vecLenna[i][j]), 0, 255), 255), j, i);
-    //     //         }
-    //     //     }
-    //     //     imgLenna.getBase64(Jimp.MIME_JPEG, function (err, src) {
-    //     //         var img = document.createElement("img");
-    //     //         img.setAttribute("src", src);
-    //     //         document.body.appendChild(img);
-    //     //     });
-
-
-        
-    //     for(i = 0; i < lenna2.bitmap.width; i++){
-    //         Direction.push([]);
-    //         for(j = 0; j < lenna2.bitmap.height; j++){
-    //             var colorGx = Jimp.intToRGBA(lenna.getPixelColor(i, j)).r;
-    //             var colorGy = Jimp.intToRGBA(lenna2.getPixelColor(i, j)).r;
-    //             var arctan = Math.atan2(colorGy, colorGx);
-    //             Direction[i].push(arctan);
-    //         }
-                
-    //     }
-    //     var maxG = 0;
-    //     for(i = 0; i < lenna2.bitmap.width*lenna2.bitmap.height*4; i++){
-    //         gx = lenna.bitmap.data[i];
-    //         gy = lenna2.bitmap.data[i];
-    //         g = Math.sqrt(gx*gx + gy*gy);
-    //         g = Math.min(255, g);
-    //         lenna2.bitmap.data[i] = g;
-    //         maxG = Math.max(maxG, g);
-    //     }
-    //     for(i = 0; i < lenna2.bitmap.width*lenna2.bitmap.height*4; i++){
-    //         lenna2.bitmap.data[i] *=  255/maxG;
-    //     }
-
-
-    //     var image = new Jimp(lenna2.bitmap.width, lenna2.bitmap.height, 0x000000FF, function(err, image){
-
-    //     });
-    //     lenna2.getBase64(Jimp.MIME_JPEG, function (err, src) {
-    //             var img = document.createElement("img");
-    //             img.setAttribute("src", src);
-    //             document.body.appendChild(img);
-    //         }) 
-    //     for(i = 1; i < lenna2.bitmap.width - 1; i++){
-    //         for(j = 1; j < lenna2.bitmap.height - 1; j++){
-    //             var angle = Direction[i][j] * 180 / Math.PI;
-    //             var color = Jimp.intToRGBA(lenna2.getPixelColor(i, j)).r;
-    //             var q, r;
-
-    //             if( (angle >= 0 && angle < 22.5) || (angle >= 157.5 && angle <= 180) ){
-    //                     q = Jimp.intToRGBA(lenna2.getPixelColor(i, j + 1)).r;
-    //                     r = Jimp.intToRGBA(lenna2.getPixelColor(i, j - 1)).r;
-    //             }
-    //             else if(angle >= 22.5 && angle < 67.5){
-    //                     q = Jimp.intToRGBA(lenna2.getPixelColor(i + 1, j - 1)).r;
-    //                     r = Jimp.intToRGBA(lenna2.getPixelColor(i - 1, j + 1)).r;
-    //             }
-    //             else if(angle >= 67.5 && angle < 112.5){
-    //                     q = Jimp.intToRGBA(lenna2.getPixelColor(i + 1, j)).r;
-    //                     r = Jimp.intToRGBA(lenna2.getPixelColor(i - 1, j)).r;
-    //             }
-    //             else if(angle >= 112.5 && angle < 157.5){
-    //                     q = Jimp.intToRGBA(lenna2.getPixelColor(i - 1, j - 1)).r;
-    //                     r = Jimp.intToRGBA(lenna2.getPixelColor(i + 1, j + 1)).r;
-    //             }
-
-    //             if(color >= q && color >= r){
-    //                 image.setPixelColor(Jimp.rgbaToInt(color, color, color, 255), i, j);
-    //             }
-    //         }
-    //     }
-    //     image.getBase64(Jimp.MIME_JPEG, function (err, src) {
-    //             var img = document.createElement("img");
-    //             img.setAttribute("src", src);
-    //             document.body.appendChild(img);
-    //         })
-
-    //     strongThreshold = maxG * 0.5;
-    //     weakThreshold = strongThreshold * 0.1;
-    //     strong = 255;
-    //     weak = 50;
-    //     for(i = 0; i < image.bitmap.width; i++){
-    //     for(j = 0; j < image.bitmap.height; j++){
-    //         var color = Jimp.intToRGBA(image.getPixelColor(i, j)).r;
-    //         if(color >= strongThreshold)
-    //             image.setPixelColor(Jimp.rgbaToInt(strong, strong, strong, 255), i, j);
-    //         else if(color >= weakThreshold)
-    //             image.setPixelColor(Jimp.rgbaToInt(weak, weak, weak, 255), i, j);
-    //         else
-    //             image.setPixelColor(Jimp.rgbaToInt(0, 0, 0, 255), i, j);
-    //     }}
-
-    //     image.getBase64(Jimp.MIME_JPEG, function (err, src) {
-    //             var img = document.createElement("img");
-    //             img.setAttribute("src", src);
-    //             document.body.appendChild(img);
-    //         })
-        
-    //     dirX = [1, 1, 0, -1, -1, -1, 0, 1];
-    //     dirY = [0, 1, 1, 1, 0, -1, -1, -1];
-
-    //     for(i = 1; i < image.bitmap.width - 1; i++){
-    //     for(j = 1; j < image.bitmap.height - 1; j++){
-
-    //         var color = Jimp.intToRGBA(image.getPixelColor(i, j)).r;
-    //         if(color == weak){
-    //             found = false;
-    //             for(var k = 0; k < 8; k++){
-    //                 var newX = i + dirX[k];
-    //                 var newY = j + dirY[k];
-    //                 var neighbourColor = Jimp.intToRGBA(image.getPixelColor(newX, newY)).r;
-    //                 if(neighbourColor == strong){
-    //                     found = true;
-    //                     image.setPixelColor(Jimp.rgbaToInt(strong, strong, strong, 255), i, j);
-    //                     break;
-    //                 }
-    //             }
-    //             if(!found){
-    //                 image.setPixelColor(Jimp.rgbaToInt(0, 0, 0, 255), i, j);
-
-    //             }
-    //         }
-
-    //     }}
-
-    //     image.getBase64(Jimp.MIME_JPEG, function (err, src) {
-    //             var img = document.createElement("img");
-    //             img.setAttribute("src", src);
-    //             document.body.appendChild(img);
-    //         })
-        
-
-    //     }).catch(function (err) {
-    //     console.error(err);
-    //     });
-    // }).catch(function (err) {
-    //     console.error(err);
-    // });
-
+    let strongThreshold;
+    let weakThreshold;
+    let strong;
+    let weak;
     function findEdges(image){
-        let convoluteSobelX = [[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]];
+        let convoluteSobelX = [[1, 0, -1], [2, 0, -2], [1, 0, -1]];
         let convoluteSobelY = [[1, 2, 1], [0, 0, 0], [-1, -2, -1]];
         let gaussianConvolute = [[2, 4, 5, 4, 2], [4, 9, 12, 9, 4], [5, 12, 15, 12, 5], [4, 9, 12 ,9, 4], [2, 4, 5, 4, 2]];
         for(i = 0; i < 5; i++)
@@ -252,27 +92,132 @@
         vectorData = convoluteVectors(vectorData, gaussianConvolute);
         let sobelX = convoluteVectors(vectorData, convoluteSobelX);
         let sobelY = convoluteVectors(vectorData, convoluteSobelY);
+        vectorData = sobelY;
         let angles = generateAngles(sobelX, sobelY, image.width, image.height);
-        vectorData = getAverageData(sobelX, sobelY, image.width, image.height)
-        let maxValue = 0;
-        vectorToImageData(sobelX, imageData);
+        vectorData = getAverageData(sobelX, sobelY, image.width, image.height);
+        let maxValue = normalize(vectorData, image.width, image.height);
         
+        let angleVectorData = newVector(image.width, image.height);
+        nonMaximumSupression(angleVectorData, angles, vectorData, image.width, image.height);
+        vectorData = angleVectorData;
 
+        strongThreshold = maxValue * 0.3;
+        weakThreshold = strongThreshold * 0.1;
+        strong = 255;
+        weak = 50;
+        doubleThreshold(vectorData, image.width, image.height);
+        hysteresis(vectorData, image.width, image.height);
+        vectorToImageData(vectorData, imageData);
 
-        displayFinalImage(image.width, image.height, imageData);
+        displayFinalImage(imageData);
     }
     
+    function hysteresis(vectorData, imageWidth, imageHeight){
+        let dirX = [1, 1, 0, -1, -1, -1, 0, 1];
+        let dirY = [0, 1, 1, 1, 0, -1, -1, -1];
+
+        for(i = 1; i < imageHeight - 1; i++){
+            for(j = 1; j < imageWidth - 1; j++){
+                let value = vectorData[i][j];
+                if(value == weak){
+                    found = false;
+                    for(k = 0; k < 8; k++){
+                        newX = i + dirX[k];
+                        newY = j + dirY[k];
+                        neighbourValue = vectorData[newX][newY];
+                        if(neighbourValue == strong){
+                            found = true;
+                            vectorData[i][j] = strong;
+                            break;
+                        }
+                    }
+                    if(!found){
+                        vectorData[i][j] = 0;
+                    }
+                }
+            }
+        }
+    }
+
+    function doubleThreshold(vectorData, imageWidth, imageHeight){
+        for(i = 0; i < imageHeight; i++){
+            for(j = 0; j < imageWidth; j++){
+                let value = vectorData[i][j];
+                if(value >= strongThreshold)
+                    vectorData[i][j] = strong;
+                else if(value >= weakThreshold)
+                    vectorData[i][j] = weak;
+                else
+                    vectorData[i][j] = 0;
+            }
+        }
+    }    
+
+    function nonMaximumSupression(vectorData, angles, originalData, imageWidth, imageHeight){
+        for(i = 1; i < imageHeight - 1; i++){
+            for(j = 1; j < imageWidth - 1; j++){
+                let angle = angles[i][j] * 180 / Math.PI;
+                let value = originalData[i][j];
+                let firstNeighbour, secondNeighbour;
+                if( (angle >= 0 && angle < 22.5) || (angle >= 157.5 && angle <= 180) ){
+                    firstNeighbour = originalData[i][j + 1];
+                    secondNeighbour = originalData[i][j - 1];
+                }
+                else if(angle >= 22.5 && angle < 67.5){
+                    firstNeighbour = originalData[i - 1][j + 1];
+                    secondNeighbour = originalData[i + 1][j - 1];
+                }
+                else if(angle >= 67.5 && angle < 112.5){
+                    firstNeighbour = originalData[i + 1][j];
+                    secondNeighbour = originalData[i - 1][j];
+                }
+                else if(angle >= 112.5 && angle < 157.5){
+                    firstNeighbour = originalData[i + 1][j + 1];
+                    secondNeighbour = originalData[i - 1][j - 1];
+                }
+                if(value >= firstNeighbour && value >= secondNeighbour){
+                    vectorData[i][j] = value;
+                }
+            }
+        }
+    }
+
+    function newVector(width, height){
+        let result = new Array;
+        for(i = 0; i < height; i++){
+            result.push([]);
+            for(j = 0; j < width; j++){
+                result[i].push(0);
+            }
+        }
+        return result;
+    }
+
+    function normalize(vectorData, imageWidth, imageHeight){
+        let maxValue = 0;
+        for(i = 0; i < imageHeight; i++){
+            for(j = 0; j < imageWidth; j++){
+                maxValue = Math.max(maxValue, vectorData[i][j]);
+            }
+        }
+        for(i = 0; i < imageHeight; i++){
+            for(j = 0; j < imageWidth; j++){
+               vectorData[i][j] *= 255/maxValue;
+            }
+        }
+        return maxValue;
+    }
+
     function getAverageData(sobelX, sobelY, imageWidth, imageHeight){
         let result = new Array;
-        console.log(sobelX);
-        for(i = 0; i < imageWidth; i++){
+        for(i = 0; i < imageHeight; i++){
             result.push([]);
-            for(j = 0; j < imageHeight; j++){
-                var colorGx = sobelX[i][j];
-                var colorGy = sobelY[i][j];
+            for(j = 0; j < imageWidth; j++){
+                let colorGx = sobelX[i][j];
+                let colorGy = sobelY[i][j];
                 let G = Math.sqrt(colorGx*colorGx + colorGy*colorGy);
                 G = Math.min(255, G);
-                result[i].push(g);
+                result[i].push(G);
             }
         }
         return result;
@@ -280,12 +225,13 @@
 
     function generateAngles(sobelX, sobelY, imageWidth, imageHeight){
         let result = new Array;
-        for(i = 0; i < imageWidth; i++){
+        for(i = 0; i < imageHeight; i++){
             result.push([]);
-            for(j = 0; j < imageHeight; j++){
-                var colorGx = sobelX[i][j];
-                var colorGy = sobelY[i][j];
-                var angle = Math.atan2(colorGy, colorGx);
+            for(j = 0; j < imageWidth; j++){
+
+                let colorGx = sobelX[i][j];
+                let colorGy = sobelY[i][j];
+                let angle = Math.atan2(colorGx, colorGy);
                 result[i].push(angle);
             }
         }
@@ -301,11 +247,11 @@
         }
     }
 
-    function displayFinalImage(imageWidth, imageHeight, imageData){
+    function displayFinalImage(imageData){
         let canvas = document.getElementById('output-canvas');
         let context = canvas.getContext('2d');
-        canvas.width = imageWidth;
-        canvas.height = imageHeight;
+        canvas.width = imageData.width;
+        canvas.height = imageData.height;
         context.putImageData(imageData, 0, 0);
     }
     </script>
