@@ -44,37 +44,33 @@ function processInput(){
 */
 
 function convoluteVectors(vector, kernel){
-        let result = [[]];
-        for (let i = 0; i < vector.length; i++) {
-            if (i != 0) result.push([]);
-            for (let j = 0; j < vector[i].length; j++) {
-                result[i].push(0);
-            }
+    let result = [[]];
+    for (let i = 0; i < vector.length; i++) {
+        if (i != 0) result.push([]);
+        for (let j = 0; j < vector[i].length; j++) {
+            result[i].push(0);
         }
-        let kernelRows = kernel.length, kernelCols = kernel[0].length;
-        let vectorRows = vector.length, vectorCols = vector[0].length;
-        let kernelMidX = Math.floor(kernelCols / 2);
-        let kernelMidY = Math.floor(kernelRows / 2);
-        for (let i = 0; i < vectorRows; i++) {
-            for (let j = 0; j < vectorCols; j++) {
-                for (let k = 0; k < kernelRows; k++) {
-                    let kk = kernelRows - 1 - k;
-                    for (let l = 0; l < kernelCols; l++) {
-                        let ll = kernelCols - 1 - l;
-                        let x, y;
-                        y = i + kk - kernelMidY;
-                        x = j + ll - kernelMidX;
-                        if (y >= 0 && x >= 0 && y < vectorRows && x < vectorCols) result[i][j] += vector[y][x] * kernel[ll][kk];
-                    }
+    }
+    let kernelRows = kernel.length, kernelCols = kernel[0].length;
+    let vectorRows = vector.length, vectorCols = vector[0].length;
+    let kernelMidX = Math.floor(kernelCols / 2);
+    let kernelMidY = Math.floor(kernelRows / 2);
+    for (let i = 0; i < vectorRows; i++) {
+        for (let j = 0; j < vectorCols; j++) {
+            for (let k = 0; k < kernelRows; k++) {
+                let kk = kernelRows - 1 - k;
+                for (let l = 0; l < kernelCols; l++) {
+                    let ll = kernelCols - 1 - l;
+                    let x, y;
+                    y = i + kk - kernelMidY;
+                    x = j + ll - kernelMidX;
+                    if (y >= 0 && x >= 0 && y < vectorRows && x < vectorCols) result[i][j] += vector[y][x] * kernel[ll][kk];
                 }
             }
         }
-        for (let i = 0; i < vectorRows; i++) 
-            for (let j = 0; j < vectorCols; j++) {
-                result[i][j] = Math.abs(result[i][j]);
-        }
-        return result;
     }
+    return result;
+}
 
     function imageDataToVector(imageData){
         let result = [[]];
@@ -89,10 +85,9 @@ function convoluteVectors(vector, kernel){
     }
 
     function vectorToImageData(vector, imageData){
-
         for (let i = 0; i < imageData.height; i++) {
             for (let j = 0; j < imageData.width; j++) {
-                let value = vector[i][j];
+                let value = Math.abs(vector[i][j]);
                 imageData.data[i * imageData.width * 4 + j * 4] = value;
                 imageData.data[i * imageData.width * 4 + j * 4 + 1] = value;
                 imageData.data[i * imageData.width * 4 + j * 4 + 2] = value;
@@ -205,6 +200,8 @@ function convoluteVectors(vector, kernel){
         for(i = 1; i < imageHeight - 1; i++){
             for(j = 1; j < imageWidth - 1; j++){
                 let angle = angles[i][j] * 180 / Math.PI;
+                if(angle < 0)
+                    angle += 180;
                 let value = originalData[i][j];
                 let firstNeighbour, secondNeighbour;
                 if( (angle >= 0 && angle < 22.5) || (angle >= 157.5 && angle <= 180) ){
@@ -212,20 +209,22 @@ function convoluteVectors(vector, kernel){
                     secondNeighbour = originalData[i][j - 1];
                 }
                 else if(angle >= 22.5 && angle < 67.5){
-                    firstNeighbour = originalData[i - 1][j + 1];
-                    secondNeighbour = originalData[i + 1][j - 1];
+                    firstNeighbour = originalData[i - 1][j - 1];
+                    secondNeighbour = originalData[i + 1][j + 1];
                 }
                 else if(angle >= 67.5 && angle < 112.5){
                     firstNeighbour = originalData[i + 1][j];
                     secondNeighbour = originalData[i - 1][j];
                 }
                 else if(angle >= 112.5 && angle < 157.5){
-                    firstNeighbour = originalData[i + 1][j + 1];
-                    secondNeighbour = originalData[i - 1][j - 1];
+                    firstNeighbour = originalData[i + 1][j - 1];
+                    secondNeighbour = originalData[i - 1][j + 1];
                 }
                 if(value >= firstNeighbour && value >= secondNeighbour){
                     vectorData[i][j] = value;
                 }
+                else
+                    vectorData[i][j] = 0;
             }
         }
     }
@@ -276,7 +275,6 @@ function convoluteVectors(vector, kernel){
         for(i = 0; i < imageHeight; i++){
             result.push([]);
             for(j = 0; j < imageWidth; j++){
-
                 let colorGx = sobelX[i][j];
                 let colorGy = sobelY[i][j];
                 let angle = Math.atan2(colorGx, colorGy);
